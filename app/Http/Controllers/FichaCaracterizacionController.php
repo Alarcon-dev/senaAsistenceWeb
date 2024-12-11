@@ -61,8 +61,7 @@ class FichaCaracterizacionController extends Controller
         $ficha = new FichaCaracterizacion();
         $ficha->programa_formacion_id = $request->input('programa_id');
         $ficha->ficha = $request->input('numero_ficha');
-
-    
+        
         $ficha->save();
 
         return redirect()->route('fichaCaracterizacion.index')->with('success', 'Caracterización creada exitosamente.');

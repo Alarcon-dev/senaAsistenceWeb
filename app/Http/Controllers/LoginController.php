@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -60,6 +61,9 @@ class LoginController extends Controller
             $token = $user->createToken('Token Name')->plainTextToken; // Generar el token
 
             $personaD = Persona::find($user->persona_id);
+
+            Log::info($personaD); 
+            
             $persona = [
                 "id" => $personaD->id,
                 "tipo_documento" => $personaD->tipoDocumento->name,
@@ -76,7 +80,10 @@ class LoginController extends Controller
                 "instructor_id" => $personaD->instructor->id,
                 "regional_id" => $personaD->instructor->regional->id,
             ];
+
+          
             // Retornar la respuesta JSON incluyendo el token
+            //return response()->json(['persona' => $persona, 'token' => $token], 200);
             return response()->json(['user' => $user, 'persona' => $persona, 'token' => $token], 200);
         }
     return response()->json(['error' => 'Credenciales incorrectas'], 401);

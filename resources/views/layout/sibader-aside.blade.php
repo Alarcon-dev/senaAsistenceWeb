@@ -483,16 +483,17 @@
 
                 {{-- FIN ADMINISTRACIÓN CARNET QR --}}
 
-                @haspermission('ASIGNAR PERMISOS')
+                {{-- @haspermission('ASIGNAR PERMISOS') --}}
                     {{-- @can('ASIGNAR PERMISOS') --}}
+                    @can('VER PROGRAMA DE CARACTERIZACION')
                     <li class="nav-item">
                         <a href="{{ route('permiso.index') }}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Asignar permisos</p>
                         </a>
                     </li>
-                    {{-- @endcan --}}
-                @endhaspermission
+                    @endcan
+                {{-- @endhaspermission --}}
         </nav>
 
     </div>

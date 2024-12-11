@@ -206,6 +206,7 @@ class CaracterizacionController extends Controller
      * Si no se encuentran caracterizaciones, se devuelve una respuesta JSON con un mensaje de error y un código de estado 404.
      */
     public function CaracterizacionByInstructor(String $id){ 
+
         $caracterizaciones = CaracterizacionPrograma::with('ficha', 'programaFormacion', 'persona', 'jornada', 'sede')
             ->where('instructor_persona_id', $id)
             ->get()
@@ -220,11 +221,12 @@ class CaracterizacionController extends Controller
                 ];
             });
 
+
         if ($caracterizaciones->isNotEmpty()) {
             return response()->json($caracterizaciones, 200);
         } else {
             return response()->json(['message' => 'No se encontraron caracterizaciones.'], 404);
         }
-
+       
     }
 }
