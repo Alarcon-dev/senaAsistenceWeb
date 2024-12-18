@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AsistenciaAprendiz;
+use App\Models\CaracterizacionPrograma;
 use App\Models\FichaCaracterizacion;
 use App\Models\JornadaFormacion;
 use Carbon\Carbon;
@@ -40,11 +41,15 @@ class AsistenciaAprendicesController extends Controller
      */
     public function getAttendanceByFicha (Request $request){
        
+        
         try {
             $fichaId = $request->input('ficha');
             if (!$fichaId) {
                 return response()->json(['message' => 'ID de ficha no proporcionado'], 400);
             }
+
+            $ficha = FichaCaracterizacion::select('ficha')->where('id', $fichaId)->first(); 
+           
             
             $asistencias = AsistenciaAprendiz::whereHas('caracterizacion', function ($query) use ($fichaId) {
                 $query->where('ficha_id', $fichaId);
@@ -53,37 +58,40 @@ class AsistenciaAprendicesController extends Controller
             if ($asistencias->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron asistencias para la ficha proporcionada'], 404);
             }
-            return view('asistencias.asistencia_by_ficha', ['asistencias' => $asistencias]);
+            return view('asistencias.asistencia_by_ficha', compact('asistencias', 'ficha') );
         } catch (Exception $e) {
             return response()->json(['message' => 'Error obteniendo asistencias', 'error' => $e->getMessage()], 500);
         }
     
     }
 
-    /**
-     * Retrieve attendance records by date range and ficha.
+   /**
+     * Recupera los registros de asistencia por rango de fechas y ficha.
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
      *
      * @throws \Illuminate\Validation\ValidationException
      *
-     * This method expects the following input parameters:
-     * - 'ficha': The ID of the ficha (required).
-     * - 'fecha_inicio': The start date of the attendance period (required).
-     * - 'fecha_fin': The end date of the attendance period (required).
+     * Este método espera los siguientes parámetros de entrada:
+     * - 'ficha': El ID de la ficha (requerido).
+     * - 'fecha_inicio': La fecha de inicio del periodo de asistencia (requerido).
+     * - 'fecha_fin': La fecha de fin del periodo de asistencia (requerido).
      *
-     * The method performs the following actions:
-     * 1. Validates that 'ficha', 'fecha_inicio', and 'fecha_fin' are provided.
-     * 2. Queries the AsistenciaAprendiz model to find attendance records that match the provided ficha ID and fall within the specified date range.
-     * 3. Returns a JSON response with a 400 status code if any of the required parameters are missing.
-     * 4. Returns a JSON response with a 404 status code if no attendance records are found.
-     * 5. Returns a view with the attendance records if found.
+     * El método realiza las siguientes acciones:
+     * 1. Valida que se hayan proporcionado 'ficha', 'fecha_inicio' y 'fecha_fin'.
+     * 2. Realiza una consulta al modelo AsistenciaAprendiz para encontrar los registros de asistencia que coincidan con el ID de la ficha proporcionada y que estén dentro del rango de fechas especificado.
+     * 3. Devuelve una respuesta JSON con un código de estado 400 si falta alguno de los parámetros requeridos.
+     * 4. Devuelve una respuesta JSON con un código de estado 404 si no se encuentran registros de asistencia.
+     * 5. Devuelve una vista con los registros de asistencia si se encuentran.
      */
     public function getAttendanceByDateAndFicha(Request $request){
        $ficha = $request->input('ficha');
        $fecha_inicio = $request->input('fecha_inicio');
        $fecha_fin = $request->input('fecha_fin');
+
+       $getFicha = FichaCaracterizacion::select('ficha')->where('id', $ficha)->first();
+       
 
          if (!$ficha || !$fecha_inicio || !$fecha_fin) {
               return response()->json(['message' => 'Datos incompletos'], 400);
@@ -96,7 +104,7 @@ class AsistenciaAprendicesController extends Controller
             return response()->json(['message' => 'No se encontraron asistencias para la ficha y fechas proporcionadas'], 404);
         }
 
-        return view('asistencias.asistencia_by_date', ['asistencias' => $asistencias]);
+        return view('asistencias.asistencia_by_date', compact('asistencias', 'getFicha'));
     }
 
     /**
@@ -116,6 +124,7 @@ class AsistenciaAprendicesController extends Controller
             if (!$ficha_id) {
                 return response()->json(['message' => 'ID de ficha no proporcionado'], 400);
             }
+
 
             $documentos = AsistenciaAprendiz::select('numero_identificacion')
             ->whereHas('caracterizacion', function ($query) use ($ficha_id) {
@@ -143,7 +152,17 @@ class AsistenciaAprendicesController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View Una respuesta JSON con un mensaje de error o una vista con las asistencias encontradas.
      */
     public function getAttendanceByDocument(Request $request){
+        
+
         $document = $request->input('documento'); 
+        $caracterizacion_id = AsistenciaAprendiz::select('caracterizacion_id')->where('numero_identificacion', $document)->first(); 
+        
+        $c_id = $caracterizacion_id -> caracterizacion_id; 
+        $ficha_id = CaracterizacionPrograma::select('ficha_id')->where('id', $c_id)->first(); 
+        $fichaId = $ficha_id -> ficha_id; 
+       
+        $ficha = FichaCaracterizacion::select('ficha')->where('id', $fichaId)->first(); 
+      
        
             if ( !$document) {
                 return response()->json(['message' => 'Datos incompletos'], 400);
@@ -155,7 +174,7 @@ class AsistenciaAprendicesController extends Controller
                 return response()->json(['message' => 'No se encontraron asistencias para la ficha y documento proporcionados'], 404);
             }
 
-            return view('asistencias.asistencia_by_document', ['asistencias' => $asistencias]);
+            return view('asistencias.asistencia_by_document', compact('asistencias', 'ficha'));
     }
 
   

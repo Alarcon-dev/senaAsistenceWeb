@@ -29,16 +29,19 @@
                                 <div class="col-md-6">
                                     <h3 class="card-title">Listado de Asistencias</h3>
                                 </div>
-                                <div class="col-md-6">
-                                    {{-- <a href="" class="btn btn-primary float-right">Descargar Reporte</a> --}}
+                                <div class="col-md-6 d-flex  justify-content-end">
+                                    <h5> Ficha: 
+                                        {{$ficha->ficha}}
+                                    </h5>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <table id="asistenciasTable" class="table table-bordered table-hover">
+                            <table id="asistenciasTable" class="table table-bordered table-hover" style="overflow-x: scroll; overflow-y: scroll">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Ficha</th>
+                                        <th class="text-center">Fecha</th>
+                                        {{-- <th class="text-center">Ficha</th> --}}
                                         <th class="text-center">Instructor</th>
                                         <th class="text-center">Nombres</th>
                                         <th class="text-center">Apellidos</th>
@@ -47,13 +50,14 @@
                                         <th class="text-center">Salida</th>
                                         <th class="text-center">Novedad Entrada</th>
                                         <th class="text-center">Novedad Salida</th>
-                                        <th class="text-center">Fecha</th>
+                                        
                                     </tr>
                                 </thead> 
                                 <tbody>
                                     @foreach($asistencias as $asistencia)
-                                    <tr></tr>
-                                        <td class="text-center">{{ $asistencia->caracterizacion->ficha->ficha }}</td>
+                                    <tr>
+                                        <td class="text-center">{{ $asistencia->created_at->format('Y-m-d') }}</td>
+                                        {{-- <td class="text-center">{{ $asistencia->caracterizacion->ficha->ficha }}</td> --}}
                                         <td class="text-center">{{ $asistencia->caracterizacion->persona->primer_nombre }}</td>
                                         <td class="text-center">{{ $asistencia->nombres }}</td>
                                         <td class="text-center">{{ $asistencia->apellidos }}</td>
@@ -62,7 +66,7 @@
                                         <td class="text-center">{{ $asistencia->hora_salida }}</td>
                                         <td class="text-center">{{ $asistencia->novedad_entrada }}</td>
                                         <td class="text-center">{{ $asistencia->novedad_salida }}</td>
-                                        <td class="text-center">{{ $asistencia->created_at->format('Y-m-d') }}</td>
+                                    </tr> 
                                     @endforeach
                                 </tbody>
                             </table>

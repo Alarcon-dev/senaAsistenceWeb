@@ -59,6 +59,8 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('Token Name')->plainTextToken; // Generar el token
+
+            Log::info($user); 
             
             $personaD = Persona::find($user->persona_id);
 
